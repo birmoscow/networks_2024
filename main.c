@@ -216,6 +216,7 @@ startUDPClient(struct sockaddr_in addr)
     }
 
     printf("IP? (smth like '1.1.1.1' ) : ");
+    fflush(stdout);
     scanf("%20s", ip);
     struct sockaddr_in addrServ =
     {
