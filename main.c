@@ -34,6 +34,9 @@ startTCPServer(struct sockaddr_in addr)
         exit(1);
     }
 
+    printf("SOCKET - OK\n");
+    fflush(stdout);
+    
     if (listen(SOCKET, 1) != 0) {
         fprintf(stderr, "Error: %s\n", strerror(errno));
         exit(1);
@@ -75,6 +78,7 @@ startTCPServer(struct sockaddr_in addr)
         int flag = 1;
         while (flag) {
             printf("Exit? (y/n) ? :");
+            fflush(stdout);
             scanf("%c", &bufChar);
             if (bufChar == 'y') {
                 isActive = 0;
@@ -97,7 +101,7 @@ startUDPServer(struct sockaddr_in addr)
     }
 
     printf("SOCKET - OK\n");
-
+    fflush(stdout);
     char msg[MAX_LEN + 1] = {0};
     int flag = 1;
     char *clientIP;
@@ -198,12 +202,14 @@ startUDPClient(struct sockaddr_in addr)
 
     printf("SOCKET - OK\n");
     printf("Who is server?\n");
-
+    fflush(stdout);
+    
     unsigned port;
     char ip[21];
     int flag = 1;
     while (flag) {
         printf("Port? : ");
+        fflush(stdout);
         if (scanf("%u", &port) == 1) {
             flag = 0;
         }
@@ -272,6 +278,7 @@ main(int argc, char **argv)
     int flag = 1;
     while (flag) {
         printf("TCP or UDP? ('t'/'u'): ");
+        fflush(stdout);
         scanf("%c", &buf);
         if (buf == 't' || buf == 'u') {
             flag = 0;
@@ -281,16 +288,19 @@ main(int argc, char **argv)
     if (MODE == 'c' && buf == 't') {
         printf("ENTER SERVER INFO!\n");
     }
-
+    
+    fflush(stdout);
     flag = 1;
     while (flag) {
         printf("Port? : ");
+        fflush(stdout);
         if (scanf("%u", &PORT) == 1) {
             flag = 0;
         }
     }
 
     printf("IP? (smth like '1.1.1.1' ) : ");
+    fflush(stdout);
     scanf("%20s", IP);
     struct sockaddr_in addr =
     {
