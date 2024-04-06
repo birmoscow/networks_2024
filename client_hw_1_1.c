@@ -1,8 +1,5 @@
 #define _GNU_SOURCE
 
-#include <openssl/evp.h>
-#include <openssl/bio.h>
-#include <openssl/err.h>
 #include <stdio.h>
 #include <sys/socket.h>
 #include <string.h>
