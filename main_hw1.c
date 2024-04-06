@@ -36,7 +36,7 @@ startTCPServer(struct sockaddr_in addr)
 
     printf("SOCKET - OK\n");
     fflush(stdout);
-    
+
     if (listen(SOCKET, 1) != 0) {
         fprintf(stderr, "Error: %s\n", strerror(errno));
         exit(1);
@@ -51,7 +51,7 @@ startTCPServer(struct sockaddr_in addr)
             fprintf(stderr, "Error: %s\n", strerror(errno));
             exit(1);
         }
-        while (msgLen = recv(curClient, msg, MAX_LEN, 0)) {
+        while ((msgLen = recv(curClient, msg, MAX_LEN, 0))) {
             if (msgLen < 0) {
                 fprintf(stderr, "Error: %s\n", strerror(errno));
                 exit(1);
@@ -106,6 +106,8 @@ startUDPServer(struct sockaddr_in addr)
     int flag = 1;
     char *clientIP;
     struct sockaddr_in client;
+    socklen_t sl = sizeof(struct sockaddr);
+
     while (flag) {
         recvfrom(SOCKET, msg, MAX_LEN, 0, NULL, 0);
         unsigned ba, bb, bc, bd, be;
@@ -137,7 +139,7 @@ startUDPServer(struct sockaddr_in addr)
     }
 
     while (flag) {
-        recvfrom(SOCKET, msg, MAX_LEN, 0, &client, sizeof(client));
+        recvfrom(SOCKET, msg, MAX_LEN, 0, &client, &sl);
         printf("Msg: %s\n", msg);
         printf("Answer: ");
         fflush(stdout);
@@ -166,7 +168,7 @@ startTCPClient(struct sockaddr_in addr)
         exit(1);
     }
 
-    while (msgLen = recv(SOCKET, msg, MAX_LEN, 0)) {
+    while ((msgLen = recv(SOCKET, msg, MAX_LEN, 0))) {
         if (msgLen < 0) {
             fprintf(stderr, "196 Error: %s\n", strerror(errno));
             exit(1);
@@ -195,7 +197,7 @@ void
 startUDPClient(struct sockaddr_in addr)
 {
     SOCKET = socket(AF_INET, SOCK_DGRAM, 0);
-    if (bind(SOCKET, &addr, sizeof(addr))) {
+    if (bind(SOCKET, (struct sockaddr*)&addr, sizeof(addr))) {
         fprintf(stderr, "Error: %s\n", strerror(errno));
         exit(1);
     }
@@ -203,7 +205,8 @@ startUDPClient(struct sockaddr_in addr)
     printf("SOCKET - OK\n");
     printf("Who is server?\n");
     fflush(stdout);
-    
+
+    socklen_t sl = sizeof(struct sockaddr);
     unsigned port;
     char ip[21];
     int flag = 1;
@@ -234,13 +237,14 @@ startUDPClient(struct sockaddr_in addr)
         fprintf(stderr, "Error: %s\n", strerror(errno));
         exit(1);
     }
-    if (sendto(SOCKET, buf_str, strlen(buf_str), 0, &addrServ, sizeof(addrServ)) < 0) {
+
+    if (sendto(SOCKET, buf_str, strlen(buf_str) + 1, 0, &addrServ, sizeof(addrServ)) < 0) {
         fprintf(stderr, "Error: %s\n", strerror(errno));
         exit(1);
     }
 
     while (flag) {
-        recvfrom(SOCKET, msg, MAX_LEN, 0, &addrServ, sizeof(addrServ));
+        recvfrom(SOCKET, msg, MAX_LEN, 0, &addrServ, &sl);
         printf("Msg: %s\n", msg);
         printf("Answer: ");
         fflush(stdout);
@@ -248,7 +252,7 @@ startUDPClient(struct sockaddr_in addr)
             msg[i] = 0;
         }
         scanf("%s", msg);
-        if (sendto(SOCKET, msg, strnlen(msg, MAX_LEN), 0, &addrServ, sizeof(addrServ)) < 0) {
+        if (sendto(SOCKET, msg, strnlen(msg, MAX_LEN) + 1, 0, &addrServ, sizeof(addrServ)) < 0) {
             fprintf(stderr, "Error: %s\n", strerror(errno));
             exit(1);
         }
@@ -277,6 +281,7 @@ main(int argc, char **argv)
 
     char buf;
     int flag = 1;
+
     while (flag) {
         printf("TCP or UDP? ('t'/'u'): ");
         fflush(stdout);
@@ -289,7 +294,7 @@ main(int argc, char **argv)
     if (MODE == 'c' && buf == 't') {
         printf("ENTER SERVER INFO!\n");
     }
-    
+
     fflush(stdout);
     flag = 1;
     while (flag) {
